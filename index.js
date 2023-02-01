@@ -13,10 +13,6 @@ const config = {
     default: "arcade", // Sistema por defecto: arcade
     arcade: {
       // Propiedades del sistema arcade
-      gravity: {
-        // Valor de la gravedad
-        y: 400,
-      },
       debug: false, // Buscar en docs sobre esto
     },
   },
