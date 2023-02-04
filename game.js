@@ -32,8 +32,13 @@ export class Game extends Phaser.Scene {
     // Params:          id asset,   ruta
     this.load.image("background", "images/background.png");
     this.load.image("gameover", "images/gameover.png");
+    this.load.image("congratulations", "images/congratulations.png");
     this.load.image("platform", "images/platform.png");
     this.load.image("ball", "images/ball.png");
+    this.load.image("brickBlue", "images/brickBlue.png");
+    this.load.image("brickBlack", "images/brickBlack.png");
+    this.load.image("brickGreen", "images/brickGreen.png");
+    this.load.image("brickOrange", "images/brickOrange.png");
   }
 
   /**
@@ -50,8 +55,25 @@ export class Game extends Phaser.Scene {
     this.add.image(400, 250, "background");
     this.gameoverImage = this.add.image(400, 90, "gameover"); // Guardamos la imagen en un obj
     this.gameoverImage.visible = false; // Ocultamos el gameover
+    this.congratsImage = this.add.image(400, 90, "congratulations");
+    this.congratsImage.visible = false;
 
     this.scoreboard.create();
+
+    // Creamos un grupo para los ladrillos
+    this.bricks = this.physics.add.staticGroup({
+      key: ["brickBlue", "brickOrange", "brickGreen", "brickBlack"], // Elementos del grupo
+      frameQuantity: 10, // Cantidad de cada uno de los elementos
+      gridAlign: {
+        // Colocamos los elementos en un sistema de rejilla
+        width: 10, // Ancho de la rejilla
+        height: 4, // Alto de la rejilla
+        cellWidth: 67, // Ancho de las celdas de la rejilla
+        cellHeight: 34, // Alto de las celdas de la rejilla
+        x: 112, // CoorX del primer elemento de la rejilla
+        y: 100, // CoordY del primer elemento de la rejilla
+      },
+    });
 
     // Sistema de físicas, lo usamos cuando colocamos un asset que le afecta las físicas
     this.platform = this.physics.add.image(400, 460, "platform").setImmovable(); // Hacemos la plataforma inmovible
@@ -74,6 +96,15 @@ export class Game extends Phaser.Scene {
       this // Contexto
     );
 
+    // Añadimos colisión entre la bola y los ladrillos
+    this.physics.add.collider(
+      this.ball,
+      this.bricks,
+      this.brickImpact,
+      null,
+      this
+    );
+
     // Cuando la bola impacte rebotará con la misma fuerza, ya que el param es 1
     this.ball.setBounce(1);
 
@@ -81,6 +112,27 @@ export class Game extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys();
   }
 
+  /**
+   * Comportamiento al impactar la bola en un ladrillo
+   * @param {*} ball
+   * @param {*} brick
+   */
+  brickImpact(ball, brick) {
+    // Deshabilitamos el obj, Escondemos el objs
+    brick.disableBody(true, true);
+    this.scoreboard.incrementPoints(10);
+    // Comprobamos si quedan elementos en el grupo
+    if (this.bricks.countActive() === 0) {
+      this.congratsImage.visible = true;
+      this.scene.pause();
+    }
+  }
+
+  /**
+   * Comportamiento al impactar la bola en la plataforma
+   * @param {*} ball
+   * @param {*} plataform
+   */
   platformImpact(ball, plataform) {
     this.scoreboard.incrementPoints(1);
     // Cambiamos la velocidad de la bola según la zona de colisión respecto a la plataforma para redirigirla
@@ -117,6 +169,7 @@ export class Game extends Phaser.Scene {
     if (this.ball.y > 500) {
       this.gameoverImage.visible = true;
       this.scene.pause();
+      this.bricks.setVisible(false);
     }
 
     if (this.cursors.up.isDown) {
