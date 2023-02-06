@@ -1,4 +1,5 @@
 import { Scoreboard } from "../components/scoreboard.js";
+import { LiveCounter } from "../components/livecounter.js";
 
 /**
  * Escena del juego, es una clase que extienda la clase de Phaser
@@ -19,6 +20,7 @@ export class Game extends Phaser.Scene {
    */
   init() {
     this.scoreboard = new Scoreboard(this);
+    this.liveCounter = new LiveCounter(this, 3);
   }
 
   /**
@@ -37,6 +39,12 @@ export class Game extends Phaser.Scene {
     this.load.image("brickBlack", "images/brickBlack.png");
     this.load.image("brickGreen", "images/brickGreen.png");
     this.load.image("brickOrange", "images/brickOrange.png");
+
+    // Precargamos los audios
+    this.load.audio("startgamesample", "sounds/start-game.mp3");
+    this.load.audio("brickimpactsample", "sounds/brick-impact.mp3");
+    this.load.audio("platformimpactsample", "sounds/platform-impact.mp3");
+    this.load.audio("livelostsample", "sounds/live-lost.mp3");
   }
 
   /**
@@ -52,7 +60,14 @@ export class Game extends Phaser.Scene {
     //Params: coorX, coorY, id imagen
     this.add.image(400, 250, "background");
 
+    this.startGameSample = this.sound.add("startgamesample");
+    this.brickImpactSample = this.sound.add("brickimpactsample");
+    this.platformImpactSample = this.sound.add("platformimpactsample");
+
     this.scoreboard.create();
+
+    this.liveCounter.create();
+    this.liveLostSample = this.sound.add("livelostsample");
 
     // Creamos un grupo para los ladrillos
     this.bricks = this.physics.add.staticGroup({
@@ -119,6 +134,7 @@ export class Game extends Phaser.Scene {
     if (this.bricks.countActive() === 0) {
       this.showCongratulations();
     }
+    this.brickImpactSample.play();
   }
 
   /**
@@ -135,6 +151,7 @@ export class Game extends Phaser.Scene {
     } else {
       ball.setVelocityX(10 * relativeImpact);
     }
+    this.platformImpactSample.play();
   }
 
   showGameOver() {
@@ -143,6 +160,16 @@ export class Game extends Phaser.Scene {
 
   showCongratulations() {
     this.scene.start("congratulations");
+  }
+
+  setInitialPlatformState() {
+    this.liveLostSample.play();
+    this.platform.x = 400;
+    this.platform.y = 460;
+    this.ball.setVelocity(0, 0);
+    this.ball.x = 385;
+    this.ball.y = 430;
+    this.ball.setData("glue", true);
   }
 
   /**
@@ -166,12 +193,15 @@ export class Game extends Phaser.Scene {
       }
     }
 
-    // Si la bola sale del mapa, gameover y pausamos la escena
-    if (this.ball.y > 500) {
-      this.showGameOver();
+    if (this.ball.y > 500 && this.ball.active) {
+      let gameNotFinished = this.liveCounter.liveLost();
+      if (gameNotFinished) {
+        this.setInitialPlatformState();
+      }
     }
 
     if (this.cursors.up.isDown) {
+      this.startGameSample.play();
       this.ball.setVelocity(-75, -300);
       this.ball.setData("glue", false);
     }
