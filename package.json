@@ -1,0 +1,23 @@
+{
+  "name": "tutorial-phaser",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "web-dev-server --node-resolve --watch --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Iker-hub/tutorial-phaser.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Iker-hub/tutorial-phaser/issues"
+  },
+  "homepage": "https://github.com/Iker-hub/tutorial-phaser#readme",
+  "devDependencies": {
+    "@web/dev-server": "^0.1.35"
+  }
+}

@@ -1,4 +1,4 @@
-import { Scoreboard } from "./components/Scoreboard.js";
+import { Scoreboard } from "../components/scoreboard.js";
 
 /**
  * Escena del juego, es una clase que extienda la clase de Phaser
@@ -31,8 +31,6 @@ export class Game extends Phaser.Scene {
     // Precargamos las imágenes
     // Params:          id asset,   ruta
     this.load.image("background", "images/background.png");
-    this.load.image("gameover", "images/gameover.png");
-    this.load.image("congratulations", "images/congratulations.png");
     this.load.image("platform", "images/platform.png");
     this.load.image("ball", "images/ball.png");
     this.load.image("brickBlue", "images/brickBlue.png");
@@ -53,10 +51,6 @@ export class Game extends Phaser.Scene {
     // según su centro
     //Params: coorX, coorY, id imagen
     this.add.image(400, 250, "background");
-    this.gameoverImage = this.add.image(400, 90, "gameover"); // Guardamos la imagen en un obj
-    this.gameoverImage.visible = false; // Ocultamos el gameover
-    this.congratsImage = this.add.image(400, 90, "congratulations");
-    this.congratsImage.visible = false;
 
     this.scoreboard.create();
 
@@ -123,8 +117,7 @@ export class Game extends Phaser.Scene {
     this.scoreboard.incrementPoints(10);
     // Comprobamos si quedan elementos en el grupo
     if (this.bricks.countActive() === 0) {
-      this.congratsImage.visible = true;
-      this.scene.pause();
+      this.showCongratulations();
     }
   }
 
@@ -142,6 +135,14 @@ export class Game extends Phaser.Scene {
     } else {
       ball.setVelocityX(10 * relativeImpact);
     }
+  }
+
+  showGameOver() {
+    this.scene.start("gameover");
+  }
+
+  showCongratulations() {
+    this.scene.start("congratulations");
   }
 
   /**
@@ -167,9 +168,7 @@ export class Game extends Phaser.Scene {
 
     // Si la bola sale del mapa, gameover y pausamos la escena
     if (this.ball.y > 500) {
-      this.gameoverImage.visible = true;
-      this.scene.pause();
-      this.bricks.setVisible(false);
+      this.showGameOver();
     }
 
     if (this.cursors.up.isDown) {
