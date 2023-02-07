@@ -5,8 +5,6 @@ export class Scoreboard {
   }
 
   create() {
-    // Añadir texto
-    // Paramas: coorX, coorY, texto, style
     this.scoreText = this.relatedScene.add.text(16, 16, "PUNTOS: 0", {
       fontSize: "20px",
       fill: "#fff",

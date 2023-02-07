@@ -6,19 +6,16 @@ import { Gameover } from "./scenes/gameover.js";
 import { Congratulations } from "./scenes/congratulations.js";
 
 const config = {
-  type: Phaser.AUTO, // Permite que el navegador use webgl o canvas según el soporte que tenga
-  width: 800, // Ancho del juego
-  height: 500, // Alto del juego
-  scene: [Game, Gameover, Congratulations], // Escena del juego (pantallas dentro del juego)
+  type: Phaser.AUTO,
+  width: 800,
+  height: 500,
+  scene: [Game, Gameover, Congratulations],
   physics: {
-    // Definición del sistema de físicas que utilizamos
-    default: "arcade", // Sistema por defecto: arcade
+    default: "arcade",
     arcade: {
-      // Propiedades del sistema arcade
-      debug: false, // Buscar en docs sobre esto
+      debug: false,
     },
   },
 };
 
-// Instanciamos el juego
 var game = new Phaser.Game(config);

@@ -13,7 +13,7 @@ export class RestartButton {
   create() {
     this.startButton = this.relatedScene.add
       .sprite(400, 230, "button")
-      .setInteractive(); // El botón es interactivo
+      .setInteractive();
 
     this.startButton.on("pointerover", () => {
       this.startButton.setFrame(1);
@@ -24,7 +24,7 @@ export class RestartButton {
     });
 
     this.startButton.on("pointerdown", () => {
-      this.relatedScene.scene.start("game"); // Iniciamos la escena
+      this.relatedScene.scene.start("game");
     });
   }
 }
